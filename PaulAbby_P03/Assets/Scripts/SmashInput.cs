@@ -64,7 +64,7 @@ public class SmashInput : MonoBehaviour
         if (xInput != 0 || yInput != 0)
         {
             Vector3 _horizontalMovement = transform.right * xInput;
-            Vector3 _forwardMovement = transform.forward * yInput;
+            Vector3 _forwardMovement = transform.up * yInput;
 
             Vector3 movement = (_horizontalMovement + _forwardMovement).normalized;
             MoveInput?.Invoke(movement);

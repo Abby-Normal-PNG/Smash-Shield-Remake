@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(SheildShrink))]
 public class SmashMotor : MonoBehaviour
 {
     public event Action Land = delegate { };
@@ -14,6 +15,7 @@ public class SmashMotor : MonoBehaviour
 
     Rigidbody _rigidbody = null;
     Vector3 _movementThisFrame = Vector3.zero;
+    SheildShrink _shield = null;
 
     bool _isGrounded = false;
     int _jumpIndex = 0;
@@ -21,6 +23,7 @@ public class SmashMotor : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _shield = GetComponent<SheildShrink>();
     }
 
     private void OnEnable()
@@ -49,7 +52,7 @@ public class SmashMotor : MonoBehaviour
     {
         if (_isGrounded || _jumpIndex < _jumpMax)
         {
-            _rigidbody.AddForce(Vector3.up * jumpForce);
+            _rigidbody.velocity = Vector3.up * jumpForce;
             _jumpIndex++;
             Jumped.Invoke();
         }
@@ -61,8 +64,21 @@ public class SmashMotor : MonoBehaviour
         {
             return;
         }
-        _rigidbody.MovePosition(_rigidbody.position + _movementThisFrame);
-        _movementThisFrame = Vector3.zero;
+        if (_shield._shieldActive)
+        {
+
+        }
+        else
+        {
+            //Limit y and z movement
+            _movementThisFrame.z = 0;
+            if(_movementThisFrame.y > 0)
+            {
+                _movementThisFrame.y = 0;
+            }
+            _rigidbody.MovePosition(_rigidbody.position + _movementThisFrame);
+            _movementThisFrame = Vector3.zero;
+        }
     }
 
     private void OnGroundDetected()

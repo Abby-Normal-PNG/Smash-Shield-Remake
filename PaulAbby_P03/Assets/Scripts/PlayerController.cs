@@ -16,10 +16,10 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] float _walkSpeed = .1f;
     [SerializeField] float _runSpeed = .2f;
-    [SerializeField] float _turnSpeed = 6f;
-    [SerializeField] float _jumpStrength = 10f;
+    [SerializeField] float _jumpVelocity = 10f;
 
     private float _currentSpeed = .1f;
+    private bool _stunned = false;
 
     private void Awake()
     {
@@ -40,6 +40,8 @@ public class PlayerController : MonoBehaviour
         _input.JumpInput += OnJump;
         _input.SheildInput += OnShield;
         _input.SheildRelease += OnShieldRelease;
+        _shield.ShieldBreak += OnShieldBreak;
+        _shield.ShieldFix += OnShieldFix;
         _input.QuitInput += OnQuit;
     }
 
@@ -49,27 +51,49 @@ public class PlayerController : MonoBehaviour
         _input.JumpInput -= OnJump;
         _input.SheildInput -= OnShield;
         _input.SheildRelease -= OnShieldRelease;
+        _shield.ShieldBreak -= OnShieldBreak;
+        _shield.ShieldFix -= OnShieldFix;
         _input.QuitInput -= OnQuit;
     }
 
     void OnMove(Vector3 movement)
     {
-        _motor.Move(movement * _currentSpeed);
+        if (!_stunned)
+        {
+            _motor.Move(movement * _currentSpeed);
+        }
     }
 
     void OnJump()
     {
-        _motor.Jump(_jumpStrength);
+        if (!_stunned)
+        {
+            _motor.Jump(_jumpVelocity);
+        }
     }
 
     void OnShield()
     {
-        _shield._shieldActive = true;
+        if (!_stunned)
+        {
+            _shield._shieldActive = true;
+        }
     }
 
     void OnShieldRelease()
     {
         _shield._shieldActive = false;
+    }
+
+    void OnShieldBreak()
+    {
+        _stunned = true;
+        _motor.Jump(_shield._breakLaunchSpeed);
+    }
+
+    void OnShieldFix()
+    {
+        _stunned = false;
     }
 
     void OnQuit()

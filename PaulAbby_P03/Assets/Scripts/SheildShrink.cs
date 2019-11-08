@@ -11,6 +11,7 @@ public class SheildShrink : MonoBehaviour
     [SerializeField] float _shieldShrinkSpeed = 0.01f;
     [SerializeField] float _shieldRestoreSpeed = 0.01f;
     public bool _shieldActive = false;
+    public float _breakLaunchSpeed = 10f;
 
     public event Action ShieldBreak = delegate { };
     public event Action ShieldFix = delegate { };
