@@ -18,6 +18,7 @@ public class SmashMotor : MonoBehaviour
     SheildShrink _shield = null;
 
     bool _isGrounded = false;
+    public bool IsGrounded { get => _isGrounded; private set { } }
     int _jumpIndex = 0;
 
     private void Awake()

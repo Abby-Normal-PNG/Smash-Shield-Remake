@@ -19,7 +19,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _jumpVelocity = 10f;
 
     private float _currentSpeed = .1f;
-    private bool _stunned = false;
+
+    enum PlayerState {Idle, Walking, Jumping, Shielding, Stunned};
+    [SerializeField] PlayerState _currentState = PlayerState.Idle;
 
     private void Awake()
     {
@@ -27,11 +29,6 @@ public class PlayerController : MonoBehaviour
         _motor = GetComponent<SmashMotor>();
         _shield = GetComponent<SheildShrink>();
         _hp = GetComponent<Health>();
-    }
-
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnEnable()
@@ -42,6 +39,7 @@ public class PlayerController : MonoBehaviour
         _input.SheildRelease += OnShieldRelease;
         _shield.ShieldBreak += OnShieldBreak;
         _shield.ShieldFix += OnShieldFix;
+        _motor.Land += OnLand;
         _input.QuitInput += OnQuit;
     }
 
@@ -53,47 +51,91 @@ public class PlayerController : MonoBehaviour
         _input.SheildRelease -= OnShieldRelease;
         _shield.ShieldBreak -= OnShieldBreak;
         _shield.ShieldFix -= OnShieldFix;
+        _motor.Land += OnLand;
         _input.QuitInput -= OnQuit;
+    }
+
+    private void Update()
+    {
+        CheckState();
+    }
+
+    private void CheckState()
+    {
+        if (_currentState == PlayerState.Stunned ||
+            _currentState == PlayerState.Shielding ||
+            _currentState == PlayerState.Jumping)
+        {
+            return;
+        }
+        if (_motor.IsGrounded == false)
+        {
+            _currentState = PlayerState.Jumping;
+            return;
+        }
+        _currentState = PlayerState.Idle;
     }
 
     void OnMove(Vector3 movement)
     {
-        if (!_stunned)
+        if (_currentState != PlayerState.Stunned)
         {
             _motor.Move(movement * _currentSpeed);
+            if(movement == Vector3.zero)
+            {
+                _currentState = PlayerState.Idle;
+            }else if(_currentState != PlayerState.Jumping)
+            {
+                _currentState = PlayerState.Walking;
+            }
         }
     }
 
     void OnJump()
     {
-        if (!_stunned)
+        if (_currentState != PlayerState.Stunned)
         {
             _motor.Jump(_jumpVelocity);
+            OnShieldRelease();
         }
     }
 
     void OnShield()
     {
-        if (!_stunned)
+        if (_currentState != PlayerState.Stunned &&
+            _motor.IsGrounded == true)
         {
             _shield._shieldActive = true;
+            _currentState = PlayerState.Shielding;
         }
     }
 
     void OnShieldRelease()
     {
         _shield._shieldActive = false;
+        if (_currentState != PlayerState.Stunned)
+        {
+            _currentState = PlayerState.Idle;
+        }
     }
 
     void OnShieldBreak()
     {
-        _stunned = true;
+        _currentState = PlayerState.Stunned;
         _motor.Jump(_shield._breakLaunchSpeed);
     }
 
     void OnShieldFix()
     {
-        _stunned = false;
+        _currentState = PlayerState.Idle;
+    }
+
+    void OnLand()
+    {
+        if(_currentState != PlayerState.Stunned)
+        {
+            _currentState = PlayerState.Idle;
+        }
     }
 
     void OnQuit()
