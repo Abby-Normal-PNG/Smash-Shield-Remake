@@ -16,8 +16,8 @@ public class SmashInput : MonoBehaviour
     private void Start()
     {
         MoveInput?.Invoke(Vector3.zero);
-        SheildInput?.Invoke();
-        SheildRelease?.Invoke();
+        //SheildInput?.Invoke();
+        //SheildRelease?.Invoke();
     }
 
     private void Update()

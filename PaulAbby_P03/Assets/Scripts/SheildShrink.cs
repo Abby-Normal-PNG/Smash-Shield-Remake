@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class SheildShrink : MonoBehaviour
 {
+    [Header("Variables")]
     [SerializeField] GameObject _shieldObject = null;
     [SerializeField] float _maxScale = 1f;
     [SerializeField] float _minScale = 0.05f;
@@ -12,6 +13,12 @@ public class SheildShrink : MonoBehaviour
     [SerializeField] float _shieldRestoreSpeed = 0.01f;
     public bool _shieldActive = false;
     public float _breakLaunchSpeed = 10f;
+    [Header("Feedback")]
+    [SerializeField] AudioSource _audioSource = null;
+    public AudioClip _shieldOnClip = null;
+    public AudioClip _shieldOffClip = null;
+    public AudioClip _shieldBreakClip = null;
+    [SerializeField] ParticleSystem _shieldBreakParticle = null;
 
     public event Action ShieldBreak = delegate { };
     public event Action ShieldFix = delegate { };
@@ -48,7 +55,6 @@ public class SheildShrink : MonoBehaviour
         }
         else
         {
-            ShieldOff();
             RestoreShield(_shieldRestoreSpeed);
             CheckShieldFix();
             Debug.Log("Shield Scale: " + _currentScale);
@@ -60,10 +66,18 @@ public class SheildShrink : MonoBehaviour
         if (_currentScale <= _minScale)
         {
             ShieldBreak?.Invoke();
-            _sheildBroken = true;
-            ShieldOff();
+            BreakShield();
         }
     }
+
+    private void BreakShield()
+    {
+        _sheildBroken = true;
+        _shieldObject.SetActive(false);
+        PlaySound(_shieldBreakClip);
+        _shieldBreakParticle.Play();
+    }
+
     private void CheckShieldFix()
     {
         if (_currentScale >= _maxScale)
@@ -103,5 +117,12 @@ public class SheildShrink : MonoBehaviour
     private void ShieldOff()
     {
         _shieldObject.SetActive(false);
+    }
+
+    public void PlaySound(AudioClip audioClip)
+    {
+        _audioSource.Stop();
+        _audioSource.clip = audioClip;
+        _audioSource.Play();
     }
 }

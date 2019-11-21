@@ -13,6 +13,9 @@ public class SmashMotor : MonoBehaviour
     [SerializeField] GroundDetector _groundDetector = null;
     [SerializeField] int _jumpMax = 2;
 
+    [SerializeField] GameObject _visuals = null;
+    [SerializeField] float _rightYRot = 90, _leftYRot = -90; 
+
     Rigidbody _rigidbody = null;
     Vector3 _movementThisFrame = Vector3.zero;
     SheildShrink _shield = null;
@@ -78,7 +81,20 @@ public class SmashMotor : MonoBehaviour
                 _movementThisFrame.y = 0;
             }
             _rigidbody.MovePosition(_rigidbody.position + _movementThisFrame);
+            FaceDirection();
             _movementThisFrame = Vector3.zero;
+        }
+    }
+
+    private void FaceDirection()
+    {
+        if(_movementThisFrame.x >= 0)
+        {
+            _visuals.transform.rotation = Quaternion.Euler(0, _rightYRot, 0);
+        }
+        else
+        {
+            _visuals.transform.rotation = Quaternion.Euler(0, _leftYRot, 0);
         }
     }
 
