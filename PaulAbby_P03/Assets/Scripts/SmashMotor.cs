@@ -14,7 +14,10 @@ public class SmashMotor : MonoBehaviour
     [SerializeField] int _jumpMax = 2;
 
     [SerializeField] GameObject _visuals = null;
-    [SerializeField] float _rightYRot = 90, _leftYRot = -90; 
+    [SerializeField] float _rightYRot = 90, _leftYRot = -90;
+    [SerializeField] GameObject _shieldVisuals = null;
+    [SerializeField] float _shieldRadius = 10;
+    private Vector3 _shieldOriginalPosition = Vector3.zero;
 
     Rigidbody _rigidbody = null;
     Vector3 _movementThisFrame = Vector3.zero;
@@ -28,6 +31,7 @@ public class SmashMotor : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _shield = GetComponent<SheildShrink>();
+        _shieldOriginalPosition = _shieldVisuals.transform.position;
     }
 
     private void OnEnable()
@@ -70,7 +74,7 @@ public class SmashMotor : MonoBehaviour
         }
         if (_shield._shieldActive)
         {
-
+            _shieldVisuals.transform.position = _shieldOriginalPosition + moveVector * _shieldRadius;
         }
         else
         {
@@ -82,6 +86,7 @@ public class SmashMotor : MonoBehaviour
             }
             _rigidbody.MovePosition(_rigidbody.position + _movementThisFrame);
             FaceDirection();
+            _shieldOriginalPosition = _shieldVisuals.transform.position;
             _movementThisFrame = Vector3.zero;
         }
     }
@@ -108,5 +113,10 @@ public class SmashMotor : MonoBehaviour
     private void OnGroundVanished()
     {
         _isGrounded = false;
+    }
+
+    internal void ReturnShield()
+    {
+        _shieldVisuals.transform.position = _shieldOriginalPosition;
     }
 }

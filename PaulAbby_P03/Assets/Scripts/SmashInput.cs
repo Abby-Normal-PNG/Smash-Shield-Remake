@@ -8,6 +8,7 @@ public class SmashInput : MonoBehaviour
     [SerializeField] bool _invertVertical = false;
 
     public event Action<Vector3> MoveInput = delegate { };
+    public event Action MoveRelease = delegate { };
     public event Action JumpInput = delegate { };
     public event Action SheildInput = delegate { };
     public event Action SheildRelease = delegate { };
@@ -68,6 +69,10 @@ public class SmashInput : MonoBehaviour
 
             Vector3 movement = (_horizontalMovement + _forwardMovement).normalized;
             MoveInput?.Invoke(movement);
+        }
+        else
+        {
+            MoveRelease?.Invoke();
         }
     }
 }

@@ -96,7 +96,7 @@ public class SheildShrink : MonoBehaviour
     private void RestoreShield(float restoreAmount)
     {
         _currentScale += restoreAmount;
-        if(_currentScale > _maxScale)
+        if (_currentScale > _maxScale)
         {
             _currentScale = _maxScale;
         }
@@ -125,4 +125,5 @@ public class SheildShrink : MonoBehaviour
         _audioSource.clip = audioClip;
         _audioSource.Play();
     }
+
 }

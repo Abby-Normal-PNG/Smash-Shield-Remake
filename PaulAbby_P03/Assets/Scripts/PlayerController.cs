@@ -14,12 +14,15 @@ public class PlayerController : MonoBehaviour
     SheildShrink _shield = null;
     Health _hp = null;
 
+    [Header("Physics")]
     [SerializeField] float _walkSpeed = .1f;
     [SerializeField] float _runSpeed = .2f;
     [SerializeField] float _jumpVelocity = 10f;
 
+    [Header("Feedback")]
     [SerializeField] AudioSource _audioSource = null;
     [SerializeField] AudioClip _jumpingClip, _dizzyClip = null;
+    [SerializeField] GameObject _stunnedEffect = null;
     [SerializeField] Animator _animator = null;
     [SerializeField] string _parameterName = "PlayerState";
 
@@ -41,6 +44,7 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         _input.MoveInput += OnMove;
+        _input.MoveRelease += OnMoveRelease;
         _input.JumpInput += OnJumpInput;
         _input.SheildInput += OnShield;
         _input.SheildRelease += OnShieldRelease;
@@ -54,6 +58,7 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _input.MoveInput -= OnMove;
+        _input.MoveRelease -= OnMoveRelease;
         _input.JumpInput -= OnJumpInput;
         _input.SheildInput -= OnShield;
         _input.SheildRelease -= OnShieldRelease;
@@ -113,6 +118,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnMoveRelease()
+    {
+        _motor.ReturnShield();
+    }
+
     void OnJumpInput()
     {
         if (_currentState != PlayerState.Stunned)
@@ -140,6 +150,7 @@ public class PlayerController : MonoBehaviour
     void OnShieldRelease()
     {
         _shield._shieldActive = false;
+        _motor.ReturnShield();
         if (_currentState != PlayerState.Stunned)
         {
             _currentState = PlayerState.Idle;
@@ -155,12 +166,14 @@ public class PlayerController : MonoBehaviour
         _motor.Jump(_shield._breakLaunchSpeed);
         _shield.PlaySound(_shield._shieldBreakClip);
         _audioSource.loop = true;
+        _stunnedEffect.SetActive(true);
         PlaySound(_dizzyClip);
     }
 
     void OnShieldFix()
     {
         _currentState = PlayerState.Idle;
+        _stunnedEffect.SetActive(false);
         UpdateAnimState();
     }
 
