@@ -5,13 +5,13 @@ using System;
 
 [RequireComponent(typeof(SmashInput))]
 [RequireComponent(typeof(SmashMotor))]
-[RequireComponent(typeof(SheildShrink))]
+[RequireComponent(typeof(ShieldShrink))]
 [RequireComponent(typeof(Health))]
 public class PlayerController : MonoBehaviour
 {
     SmashInput _input = null;
     SmashMotor _motor = null;
-    SheildShrink _shield = null;
+    ShieldShrink _shield = null;
     Health _hp = null;
 
     [Header("Physics")]
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
     {
         _input = GetComponent<SmashInput>();
         _motor = GetComponent<SmashMotor>();
-        _shield = GetComponent<SheildShrink>();
+        _shield = GetComponent<ShieldShrink>();
         _hp = GetComponent<Health>();
     }
 

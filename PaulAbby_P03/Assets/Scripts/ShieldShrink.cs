@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class SheildShrink : MonoBehaviour
+public class ShieldShrink : MonoBehaviour
 {
     [Header("Variables")]
     [SerializeField] GameObject _shieldObject = null;
@@ -24,7 +24,7 @@ public class SheildShrink : MonoBehaviour
     public event Action ShieldFix = delegate { };
 
     private float _currentScale;
-    private bool _sheildBroken = false;
+    private bool _shieldBroken = false;
 
     public bool ShieldIsFull { get; private set; }
 
@@ -37,7 +37,7 @@ public class SheildShrink : MonoBehaviour
 
     private void Update()
     {
-        if (!_sheildBroken)
+        if (!_shieldBroken)
         {
             if (_shieldActive)
             {
@@ -72,7 +72,7 @@ public class SheildShrink : MonoBehaviour
 
     private void BreakShield()
     {
-        _sheildBroken = true;
+        _shieldBroken = true;
         _shieldObject.SetActive(false);
         PlaySound(_shieldBreakClip);
         _shieldBreakParticle.Play();
@@ -83,7 +83,7 @@ public class SheildShrink : MonoBehaviour
         if (_currentScale >= _maxScale)
         {
             ShieldFix?.Invoke();
-            _sheildBroken = false;
+            _shieldBroken = false;
         }
     }
 
